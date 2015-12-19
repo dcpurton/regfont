@@ -1,0 +1,44 @@
+regfont
+Temporarily register/unregister fonts
+Copyright © 2010–2015  David Purton <dcpurton@marshwiggle.net>
+
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+regfont is a simple application to temporarily register or unregister fonts
+under Microsoft® Windows® 2000 and above.
+
+It depends only on standard libraries, and can be run by an unprivileged user.
+
+
+Usage: regfont [-a|-r|-h|-v] font1 font2...
+        -a, --add       Add specified fonts
+        -r, --remove    Remove specified fotns
+        -h, --help      This help message
+        -v, --version   Print version information
+
+
+Examples:
+
+        Register a single font
+                regfont -a cambria.ttf
+
+        Register multiple fonts:
+                regfont -a calibrib.ttf calibrii.ttf calibri.ttf calibriz.ttf
+
+        Register a PostScript® font
+                regfont -a "SY______.PFM|SY______.PFB"
+
+        Unregister all truetype fonts in the current directory
+                regfont -r *.ttf

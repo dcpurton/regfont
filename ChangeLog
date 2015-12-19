@@ -1,0 +1,49 @@
+regfont (20151219)
+
+  * Import into GitHub
+  * Add autogen.sh
+  * Update README
+  * Add bindist Make target
+
+ -- David Purton <dcpurton@marshwiggle.net> Sat, 19 Dec 2015 22:08:13 +1030
+
+regfont (20130320)
+
+  * Revert inadequate attempt to internally handle wildcards
+  * Enable compiler handling of wildcards
+  * Avoid filename confusion by removing full stops on the end of sentences
+  * Correct usage in README for PostScript fonts
+  * Update version
+
+ -- David Purton <dcpurton@marshwiggle.net> Wed, 20 Mar 2013 00:07:12 +1030
+
+regfont (20130224)
+
+  * Internally deal with wildcards instead of relying on shell
+  * Update version
+
+ -- David Purton <dcpurton@marshwiggle.net> Sun, 24 Feb 2013 00:20:40 +1030
+
+regfont (20120616)
+
+  * Fix typo in usage statement
+  * Add examples to README
+  * Change build environment to autoconf
+  * Change license to GPL Version 3
+  * Update version
+
+ -- David Purton <dcpurton@marshwiggle.net> Sat, 16 Jun 2012 16:12:35 +1000
+
+regfont (20110912)
+
+  * Exclude .svn directory from bin directory in distribution zip file
+  * Update version
+
+ -- David Purton <dcpurton@marshwiggle.net> Mon, 12 Sep 2011 01:06:46 +1000
+
+regfont (20100826)
+
+  * Initial Release
+
+ -- David Purton <dcpurton@marshwiggle.net> Thu, 26 Aug 2010 16:43:15 +1000
+
