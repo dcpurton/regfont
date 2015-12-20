@@ -68,7 +68,7 @@ void printUsage () {
 
 void printVersion () {
   printf ("regfont version %s.\n", VERSION);
-  printf ("(c) 2010-2013 David Purton\n");
+  printf ("(c) 2010-2015 David Purton\n");
 }
 
 void processOptions (int argc, char **argv) {
