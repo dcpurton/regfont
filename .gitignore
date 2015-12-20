@@ -14,5 +14,6 @@ Makefile.in
 .dirstamp
 *.exe
 *.o
+*.swp
 *.zip
 *~
