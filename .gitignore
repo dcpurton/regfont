@@ -12,5 +12,7 @@ Makefile.in
 /stamp-h?
 .deps/
 .dirstamp
+*.exe
 *.o
+*.zip
 *~
