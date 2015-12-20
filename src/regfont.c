@@ -1,7 +1,7 @@
 /* regfont.c
  * Temporarily register and unregister fonts under Microsoft(R)
  * Windows(R) 2000 and above.
- * Copyright (c) 2010-2013  David Purton
+ * Copyright (c) 2010-2015  David Purton
  */
 
 /* This program is free software: you can redistribute it and/or modify
