@@ -23,6 +23,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <windows.h>
+#include <shlwapi.h>
 
 #include "config.h"
 
@@ -36,25 +37,168 @@ enum REGFONT_TASKS {
   REGFONT_TASK_VERSION
 } regfont_task;
 
+typedef enum REGFONT_FONT_TYPES {
+  REGFONT_ANY,
+  REGFONT_PFB,
+  REGFONT_PFM
+} regfont_font_type;
+
+enum REGFONT_ERRORS {
+  REGFONT_OK,
+  REGFONT_INVALID_FONT_PATH,
+  REGFONT_FONT_NOT_FOUND,
+  REGFONT_FULL_FONT_PATH_TOO_LONG,
+  REGFONT_FONT_IS_DIRECTORY,
+  REGFONT_NOT_FONT_FILE,
+  REGFONT_NOT_POSTSCRIPT
+};
+
+int checkFile (char *filename, regfont_font_type type) {
+  char fullfilename[MAX_PATH] = "";
+  char *fileextension;
+  int retval = 0;
+
+  retval = GetFullPathName (filename, MAX_PATH, fullfilename, NULL);
+
+  if (retval > MAX_PATH) {
+    fprintf (stderr, "ERROR: Full path for font too long: %s\n", filename);
+    return REGFONT_FULL_FONT_PATH_TOO_LONG;
+  } else if (retval == 0) {
+    fprintf (stderr, "ERROR: Could not get full path for font: %s\n", filename);
+    return REGFONT_INVALID_FONT_PATH;
+  }
+
+  if (!PathFileExists (fullfilename)) {
+    fprintf (stderr, "ERROR: Font not found: %s\n", filename);
+    return REGFONT_FONT_NOT_FOUND;
+  }
+
+  if (PathIsDirectory (fullfilename)) {
+    fprintf (stderr, "ERROR: Font is directory: %s\n", filename);
+    return REGFONT_FONT_IS_DIRECTORY;
+  }
+
+  fileextension = PathFindExtension (fullfilename);
+
+  if (strlen (fileextension) > 0)
+    fileextension++;
+
+  switch (type) {
+    case REGFONT_PFM:
+      if (CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "pfm", -1) != CSTR_EQUAL) {
+        if (CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "pfb", -1) == CSTR_EQUAL) {
+          fprintf (stderr, "ERROR: PostScript font specified incorrectly\n");
+          fprintf (stderr, "ERROR:     Use \"font.pfm|font.pfb\".\n");
+        } else {
+          fprintf (stderr, "ERROR: Not a PostScript font file: %s\n", filename);
+          fprintf (stderr, "ERROR:     Extension of first file must be pfm\n");
+        }
+        return REGFONT_NOT_FONT_FILE;
+      }
+      break;
+    case REGFONT_PFB:
+      if (CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "pfb", -1) != CSTR_EQUAL) {
+        if (CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "pfm", -1) == CSTR_EQUAL) {
+          fprintf (stderr, "ERROR: PostScript font specified incorrectly\n");
+          fprintf (stderr, "ERROR:     Use \"font.pfm|font.pfb\".\n");
+        } else {
+          fprintf (stderr, "ERROR: Not a PostScript font file: %s\n", filename);
+          fprintf (stderr, "ERROR:     Extension of second file must be pfb\n");
+        }
+        return REGFONT_NOT_FONT_FILE;
+      }
+      break;
+    case REGFONT_ANY:
+    default:
+      if (CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "fon", -1) != CSTR_EQUAL &&
+          CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "fnt", -1) != CSTR_EQUAL &&
+          CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "ttf", -1) != CSTR_EQUAL &&
+          CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "ttc", -1) != CSTR_EQUAL &&
+          CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "fot", -1) != CSTR_EQUAL &&
+          CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "otf", -1) != CSTR_EQUAL &&
+          CompareString (LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+            fileextension, -1, "mmm", -1) != CSTR_EQUAL) {
+        fprintf (stderr, "ERROR: Not a font file: %s\n", filename);
+        fprintf (stderr, "ERROR:     Extension of file must be one of:\n");
+        fprintf (stderr, "ERROR:     fon, fnt, ttf, ttc, fot, otf, mmm\n");
+        return REGFONT_NOT_FONT_FILE;
+      }
+      break;
+  }
+
+  return REGFONT_OK;
+}
+
+int checkPostScriptFile (char *filename) {
+  char *pfb_filename;
+  char pfm_filename[MAX_PATH];
+  int retval;
+
+  pfb_filename = strchr (filename, '|');
+
+  if (!pfb_filename) {
+    return REGFONT_NOT_POSTSCRIPT;
+  }
+  pfb_filename++;
+
+  memset (pfm_filename, 0, sizeof (pfm_filename));
+  strncpy (pfm_filename, filename, pfb_filename - filename - 1);
+
+  retval = checkFile (pfm_filename, REGFONT_PFM);
+  if (retval != REGFONT_OK)
+    return retval;
+
+  return checkFile (pfb_filename, REGFONT_PFB);
+}
+
+int checkFontFile (char *filename) {
+  int retval;
+
+  retval = checkPostScriptFile (filename);
+
+  if (retval == REGFONT_NOT_POSTSCRIPT)
+    return checkFile (filename, REGFONT_ANY);
+  else
+    return retval;
+}
+
 void addFonts (int n, char **files) {
   int i = 0;
+
   for ( ; i < n; i++) {
-    if (AddFontResource (files[i]) == 0)
-      printf ("Error adding %s\n", files[i]);
-    else
-      printf ("Successfully added font %s\n", files[i]);
+    if (checkFontFile (files[i]) == REGFONT_OK) {
+      if (AddFontResource (files[i]) == 0)
+        fprintf (stderr, "ERROR: Could not add font: %s\n", files[i]);
+      else
+        printf ("Successfully added font: %s\n", files[i]);
+    }
   }
+
   SendMessage (HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
 }
 
 void removeFonts (int n, char **files) {
   int i = 0;
+
   for ( ; i < n; i++) {
-    if (RemoveFontResource (files[i]) == 0)
-      printf ("Error removing %s\n", files[i]);
-    else
-      printf ("Successfully removed font %s\n", files[i]);
+    if (checkFontFile (files[i]) == REGFONT_OK) {
+      if (RemoveFontResource (files[i]) == 0)
+        fprintf (stderr, "ERROR: Could not remove font: %s\n", files[i]);
+      else
+        printf ("Successfully removed font: %s\n", files[i]);
+    }
   }
+
   SendMessage (HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
 }
 
@@ -134,7 +278,7 @@ int main (int argc, char **argv) {
     if (argc - optind > 0) {
       addFonts (argc - optind, &argv[optind]);
     } else {
-      printf ("No font files specified!\n");
+      fprintf (stderr, "ERROR: No font files specified to add!\n");
       printUsage ();
     }
     break;
@@ -142,7 +286,7 @@ int main (int argc, char **argv) {
     if (argc - optind > 0) {
       removeFonts (argc - optind, &argv[optind]);
     } else {
-      printf ("No font files specified!\n");
+      fprintf (stderr, "ERROR: No font files specified to remove!\n");
       printUsage ();
     }
     break;
