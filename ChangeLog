@@ -2,6 +2,7 @@ regfont (20160109)
 
   * Add better file error checking
   * Add debug output
+  * Update copyright dates
 
  -- David Purton <dcpurton@marshwiggle.net> Sat, 09 Jan 2016 23:27:29 +1030
 
