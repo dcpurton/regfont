@@ -27,6 +27,7 @@ Usage: regfont [-a|-r|-h|-v] font1 font2...
         -r, --remove    Remove specified fotns
         -h, --help      This help message
         -v, --version   Print version information
+        -d, --debug	Turn on debugging information
 
 
 Examples:
