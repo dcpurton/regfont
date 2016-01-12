@@ -1,4 +1,4 @@
-VERSION=20160112
+VERSION=20160109
 
 CC=cl
 CFLAGS=/nologo /O2 /D_CRT_SECURE_NO_DEPRECATE /DSTATIC_GETOPT
@@ -32,4 +32,3 @@ clean:
 	@if exist src\regfont.obj del src\regfont.obj
 	@echo del src\regfont.exe
 	@if exist src\regfont.exe del src\regfont.exe
-

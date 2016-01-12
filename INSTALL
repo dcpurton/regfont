@@ -2,16 +2,20 @@ regfont
 Temporarily register/unregister fonts under Microsoft® Windows® 2000 and above.
 Copyright © 2010–2016  David Purton <dcpurton@marshwiggle.net>
 
-regfont needs to be compiled using either MinGW-w64 or Microsoft Visual C++.
+regfont can be compiled using either the Gnu C Compiler or Microsoft Visual C++.
 
 
-To compile (or cross-compile) under MinGW-w64, run:
+To compile using the Gnu C Compiler (under a UNIX-like shell), run:
 
-    ./configure [--host=i686-w64-mingw32 | --host=x86_64-w64-mingw32]
+    ./configure
     make
     make install
 
     If building from a clean checkout from GitHub first run ./autogen.sh
+
+    Depends:
+        - Gnu getopt (needs getopt_long)
+        - Windows headers and libraries
 
 
 To build under Microsoft Visual C++, after setting up your environment
@@ -19,3 +23,5 @@ appropriately, run:
 
     nmake /f Makefile.nmake
 
+    Depends:
+        - Microsoft Windows Platform SDK
