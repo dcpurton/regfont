@@ -1,4 +1,5 @@
 SUBDIRS = src
+EXTRA_DIST = Makefile.nmake getopt/getopt.c getopt/getopt.h
 dist_doc_DATA = ChangeLog COPYING README
 bindistdir = $(PACKAGE)-$(VERSION)-$(host_cpu)
 
