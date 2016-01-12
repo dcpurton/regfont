@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([regfont],[20160109],[dcpurton@marshwiggle.net])
+AC_INIT([regfont],[20160112],[dcpurton@marshwiggle.net])
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR([src/regfont.c])
 AC_CONFIG_HEADERS([config.h])

@@ -25,10 +25,14 @@
 #include <windows.h>
 #include <shlwapi.h>
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
+#ifdef __MINGW64_VERSION_MAJOR
 /* Turn on wildcard expansion for the mingw-w64 compiler */
 int _dowildcard = -1;
+#endif
 
 int regfont_debugging = 0;
 
@@ -304,7 +308,7 @@ void printVersion () {
 }
 
 void processOptions (int argc, char **argv) {
-  int opt;
+  int opt, i;
 
   regfont_task = REGFONT_TASK_HELP;
 
@@ -368,7 +372,7 @@ void processOptions (int argc, char **argv) {
 
   if (regfont_debugging) {
     fprintf (stderr, "DEBUG: Processing options: Commandline arguments found:\n");
-    for (int i = 0; i < argc; i++) {
+    for (i = 0; i < argc; i++) {
       fprintf (stderr, "DEBUG:     %s\n", argv[i]);
     }
     fflush (stderr);
@@ -391,7 +395,7 @@ void processOptions (int argc, char **argv) {
     }
     if (optind < argc) {
       fprintf (stderr, "DEBUG: Processing options: Font files to process:\n");
-      int i = optind;
+      i = optind;
       while (i < argc) {
         fprintf (stderr, "DEBUG:     %s\n", argv[i++]);
       }

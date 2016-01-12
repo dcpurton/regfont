@@ -1,0 +1,35 @@
+VERSION=20160112
+
+CC=cl
+CFLAGS=/nologo /O2 /D_CRT_SECURE_NO_DEPRECATE /DSTATIC_GETOPT
+
+LINK=link
+LDFLAGS=/nologo /SUBSYSTEM:CONSOLE 
+LIBS=setargv.obj kernel32.lib user32.lib gdi32.lib shlwapi.lib
+
+
+all: src/regfont.exe
+
+getopt\getopt.obj: getopt\getopt.c getopt\getopt.h
+	@cd getopt
+	$(CC) /c $(CFLAGS) getopt.c
+	@cd ..
+
+src\regfont.obj: src\regfont.c
+	@cd src
+	$(CC) /c $(CFLAGS) /I../\getopt /DVERSION=\"$(VERSION)\" regfont.c
+	@cd ..
+
+src\regfont.exe: src\regfont.obj getopt\getopt.obj
+	@cd src
+	$(LINK) $(LDFLAGS) /OUT:regfont.exe regfont.obj ..\getopt\getopt.obj $(LIBS)
+	@cd ..
+
+clean:
+	@echo del getopt\getopt.obj
+	@if exist getopt\getopt.obj del getopt\getopt.obj
+	@echo del src\regfont.obj
+	@if exist src\regfont.obj del src\regfont.obj
+	@echo del src\regfont.exe
+	@if exist src\regfont.exe del src\regfont.exe
+
